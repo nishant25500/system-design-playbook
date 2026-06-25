@@ -1,12 +1,9 @@
-package ParkingLotSystem.service;
+package ParkingLotSystem.strategies;
 
 import ParkingLotSystem.entity.ParkingFloor;
 import ParkingLotSystem.entity.ParkingLot;
 import ParkingLotSystem.entity.ParkingSpot;
 import ParkingLotSystem.enums.VehicleType;
-import ParkingLotSystem.strategies.SpotAllocationStrategy;
-
-import java.util.List;
 
 public class FirstAvailableSpotAllocationStrategy implements SpotAllocationStrategy {
 

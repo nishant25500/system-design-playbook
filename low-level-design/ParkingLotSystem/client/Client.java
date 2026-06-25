@@ -3,13 +3,17 @@ package ParkingLotSystem.client;
 import ParkingLotSystem.entity.*;
 import ParkingLotSystem.enums.SpotType;
 import ParkingLotSystem.enums.VehicleType;
+import ParkingLotSystem.exception.InvalidTicketException;
+import ParkingLotSystem.exception.ParkingFullException;
 import ParkingLotSystem.service.ParkingService;
+import ParkingLotSystem.strategies.FirstAvailableSpotAllocationStrategy;
+import ParkingLotSystem.strategies.HourlyFareCalculationStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Client {
-    public static void main(String[] args){
+    public static void main(String[] args) {
         System.out.println("I am Client from Parking Lot System");
         // Data seeding
 
@@ -26,21 +30,21 @@ public class Client {
 
         //floors
         ParkingFloor floor1 = new ParkingFloor(List.of(
-                new ParkingSpot("S-101", SpotType.CAR,false,1),
-                new ParkingSpot("S-102", SpotType.CAR,false,1),
-                new ParkingSpot("S-111", SpotType.BIKE,false,1),
-                new ParkingSpot("S-112", SpotType.BIKE,false,1),
-                new ParkingSpot("S-121", SpotType.TRUCK,false,1),
-                new ParkingSpot("S-122", SpotType.TRUCK,false,1)
+                new ParkingSpot("S-101", SpotType.CAR, false, 1),
+                new ParkingSpot("S-102", SpotType.CAR, false, 1),
+                new ParkingSpot("S-111", SpotType.BIKE, false, 1),
+                new ParkingSpot("S-112", SpotType.BIKE, false, 1),
+                new ParkingSpot("S-121", SpotType.TRUCK, false, 1),
+                new ParkingSpot("S-122", SpotType.TRUCK, false, 1)
         ));
 
         ParkingFloor floor2 = new ParkingFloor(List.of(
-                new ParkingSpot("S-101", SpotType.CAR,false,2),
-                new ParkingSpot("S-102", SpotType.CAR,false,2),
-                new ParkingSpot("S-111", SpotType.BIKE,false,2),
-                new ParkingSpot("S-112", SpotType.BIKE,false,2),
-                new ParkingSpot("S-121", SpotType.TRUCK,false,2),
-                new ParkingSpot("S-122", SpotType.TRUCK,false,2)
+                new ParkingSpot("S-101", SpotType.CAR, false, 2),
+                new ParkingSpot("S-102", SpotType.CAR, false, 2),
+                new ParkingSpot("S-111", SpotType.BIKE, false, 2),
+                new ParkingSpot("S-112", SpotType.BIKE, false, 2),
+                new ParkingSpot("S-121", SpotType.TRUCK, false, 2),
+                new ParkingSpot("S-122", SpotType.TRUCK, false, 2)
         ));
 
         List<ParkingFloor> floors = List.of(floor1, floor2);
@@ -48,46 +52,56 @@ public class Client {
         //parking lot
         ParkingLot parkingLot = ParkingLot.getInstance(List.of(floor1, floor2));
 
-        ParkingService parkingService = new ParkingService();
+        ParkingService parkingService = new ParkingService(new FirstAvailableSpotAllocationStrategy(), new HourlyFareCalculationStrategy());
 
+        Ticket ticket1 = null, ticket2 = null, ticket3 = null, ticket4 = null, ticket5 = null;
 
-        Ticket ticket1 = parkingService.park(vehicles.get(1), parkingLot);
-        Ticket ticket2 = parkingService.park(vehicles.get(1), parkingLot);
-        Ticket ticket3 = parkingService.park(vehicles.get(1), parkingLot);
-        Ticket ticket4 = parkingService.park(vehicles.get(1), parkingLot);
-
-
-        if(ticket1 != null){
+        try {
+            ticket1 = parkingService.park(vehicles.get(1), parkingLot);
             System.out.println("Parked V1!! Please find the ticket below");
             System.out.println(ticket1);
+        } catch (ParkingFullException ex) {
+            System.out.println(ex.getMessage());
         }
-        if(ticket2 != null){
+
+        try {
+            ticket2 = parkingService.park(vehicles.get(1), parkingLot);
             System.out.println("Parked V2!! Please find the ticket below");
             System.out.println(ticket2);
+        } catch (ParkingFullException ex) {
+            System.out.println(ex.getMessage());
         }
-        if(ticket3 != null){
+
+        try {
+            ticket3 = parkingService.park(vehicles.get(1), parkingLot);
             System.out.println("Parked V3!! Please find the ticket below");
             System.out.println(ticket3);
+        } catch (ParkingFullException ex) {
+            System.out.println(ex.getMessage());
         }
-        if(ticket4 != null){
+
+        try {
+            ticket4 = parkingService.park(vehicles.get(1), parkingLot);
             System.out.println("Parked V4!! Please find the ticket below");
             System.out.println(ticket4);
+        } catch (ParkingFullException ex) {
+            System.out.println(ex.getMessage());
         }
 
-        Receipt receiptForCar1 = parkingService.unpark(ticket1);
-
-        if(receiptForCar1 == null){
-            System.out.println("Smthng went wrong");
+        //unpark
+        try {
+            Receipt receiptForCar1 = parkingService.unpark(ticket1);
+            System.out.println(receiptForCar1);
+        } catch (InvalidTicketException ex) {
+            System.out.println(ex.getMessage());
         }
 
-        System.out.println(receiptForCar1);
-
-        Ticket ticket5 = parkingService.park(vehicles.get(1), parkingLot);
-        if (ticket5 != null) {
+        try {
+            ticket5 = parkingService.park(vehicles.get(1), parkingLot);
             System.out.println("Parked V5!! Please find the ticket below");
             System.out.println(ticket5);
-        }else{
-            System.out.println("Parking full!!!!!");
+        } catch (ParkingFullException ex) {
+            System.out.println(ex.getMessage());
         }
 
     }

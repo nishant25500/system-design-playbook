@@ -26,9 +26,9 @@ public class Ticket {
         return ticketId;
     }
 
-    public void setTicketId(String ticketId) {
-        this.ticketId = ticketId;
-    }
+//    public void setTicketId(String ticketId) {
+//        this.ticketId = ticketId;
+//    }
 
     public ParkingSpot getParkingSpot() {
         return parkingSpot;
@@ -50,9 +50,9 @@ public class Ticket {
         return checkInDateTime;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
-        this.checkInDateTime = checkInDateTime;
-    }
+//    public void setDateTime(LocalDateTime dateTime) {
+//        this.checkInDateTime = checkInDateTime;
+//    }
 
     @Override
     public boolean equals(Object o) {

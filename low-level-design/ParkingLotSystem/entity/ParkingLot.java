@@ -14,7 +14,7 @@ public class ParkingLot {
 
     public static ParkingLot getInstance(List<ParkingFloor> parkingFloors){
         if(parkingLot == null){
-            return new ParkingLot(parkingFloors);
+            parkingLot =  new ParkingLot(parkingFloors);
         }
         return parkingLot;
     }

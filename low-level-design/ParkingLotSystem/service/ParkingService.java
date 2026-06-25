@@ -1,24 +1,38 @@
 package ParkingLotSystem.service;
 
 import ParkingLotSystem.entity.*;
+import ParkingLotSystem.exception.InvalidTicketException;
+import ParkingLotSystem.exception.ParkingFullException;
 import ParkingLotSystem.strategies.FareCalculationStrategy;
+import ParkingLotSystem.strategies.FirstAvailableSpotAllocationStrategy;
+import ParkingLotSystem.strategies.HourlyFareCalculationStrategy;
 import ParkingLotSystem.strategies.SpotAllocationStrategy;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class ParkingService {
-    SpotAllocationStrategy allocationStrategy = new FirstAvailableSpotAllocationStrategy();
-    FareCalculationStrategy fareCalculationStrategy = new HourlyFareCalculationStrategy();
+    private final SpotAllocationStrategy allocationStrategy ;
+    private final FareCalculationStrategy fareCalculationStrategy ;
 
+    public ParkingService(SpotAllocationStrategy allocationStrategy, FareCalculationStrategy fareCalculationStrategy){
+        this.allocationStrategy = allocationStrategy;
+        this.fareCalculationStrategy = fareCalculationStrategy;
+    }
+
+    // Todo: Use Concurrent HashMap to tickets
     Set<Ticket> tickets = new HashSet<>();
 
     //park
     public Ticket park(Vehicle vehicle, ParkingLot parkingLot){
+
+        // TODO: Make allocation atomic/thread-safe
         ParkingSpot availableSpot = allocationStrategy.allocateSpot(vehicle.getVehicleType(), parkingLot);
 
         if(availableSpot == null){
-            return null;
+            throw new ParkingFullException(
+                    "No parking spot available, Parking Full!"
+            );
         }
 
         //spot occupied ture
@@ -38,7 +52,9 @@ public class ParkingService {
     //unpark
     public Receipt unpark(Ticket ticket){
         // check ticket validity
-        if(tickets.contains(ticket)){
+        if(!tickets.contains(ticket))
+            throw new InvalidTicketException("Invalid Ticket");
+
             ParkingSpot occupiedSpot = ticket.getParkingSpot();
 
             // unoccupied
@@ -51,9 +67,5 @@ public class ParkingService {
             tickets.remove(ticket);
 
             return new Receipt(ticket.getTicketId(), calculatedFare);
-        }
-
-        //ticket invalid/lost
-        return null;
     }
 }
