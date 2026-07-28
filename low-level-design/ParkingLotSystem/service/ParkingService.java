@@ -9,63 +9,64 @@ import ParkingLotSystem.strategies.HourlyFareCalculationStrategy;
 import ParkingLotSystem.strategies.SpotAllocationStrategy;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ParkingService {
-    private final SpotAllocationStrategy allocationStrategy ;
-    private final FareCalculationStrategy fareCalculationStrategy ;
+    private final SpotAllocationStrategy allocationStrategy;
+    private final FareCalculationStrategy fareCalculationStrategy;
 
-    public ParkingService(SpotAllocationStrategy allocationStrategy, FareCalculationStrategy fareCalculationStrategy){
+    public ParkingService(SpotAllocationStrategy allocationStrategy, FareCalculationStrategy fareCalculationStrategy) {
         this.allocationStrategy = allocationStrategy;
         this.fareCalculationStrategy = fareCalculationStrategy;
     }
 
-    // Todo: Use Concurrent HashMap to tickets
-    Set<Ticket> tickets = new HashSet<>();
+    // Use Concurrent HashMap to tickets
+    private final Map<String, Ticket> activeTickets = new ConcurrentHashMap<>();
 
     //park
-    public Ticket park(Vehicle vehicle, ParkingLot parkingLot){
+    public Ticket park(Vehicle vehicle, ParkingLot parkingLot) {
 
         // TODO: Make allocation atomic/thread-safe
         ParkingSpot availableSpot = allocationStrategy.allocateSpot(vehicle.getVehicleType(), parkingLot);
 
-        if(availableSpot == null){
+        if (availableSpot == null) {
             throw new ParkingFullException(
                     "No parking spot available, Parking Full!"
             );
         }
 
-        //spot occupied ture
-        availableSpot.setOccupied(true);
-
         //generate ticket
         Ticket ticket = new Ticket(availableSpot, vehicle);
 
-
-        tickets.add(ticket);
+        //add ticket
+        activeTickets.putIfAbsent(ticket.getTicketId(), ticket);
 
         return ticket;
     }
 
 
-
     //unpark
-    public Receipt unpark(Ticket ticket){
+    public Receipt unpark(Ticket ticket) {
         // check ticket validity
-        if(!tickets.contains(ticket))
+        //remove ticket from record and return
+        Ticket activeTicket =
+                activeTickets.remove(ticket.getTicketId());
+
+        if (activeTicket == null) {
             throw new InvalidTicketException("Invalid Ticket");
+        }
 
-            ParkingSpot occupiedSpot = ticket.getParkingSpot();
+        ParkingSpot occupiedSpot = activeTicket.getParkingSpot();
 
-            // unoccupied
-            occupiedSpot.setOccupied(false);
+        // unoccupied
+        occupiedSpot.release();
 
-            //calculate fare
-            Double calculatedFare = fareCalculationStrategy.calculateFare(ticket);
+        //calculate fare
+        Double calculatedFare = fareCalculationStrategy.calculateFare(activeTicket);
 
-            //remove ticket from record
-            tickets.remove(ticket);
 
-            return new Receipt(ticket.getTicketId(), calculatedFare);
+        return new Receipt(ticket.getTicketId(), calculatedFare);
     }
 }

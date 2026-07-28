@@ -8,10 +8,10 @@ import ParkingLotSystem.enums.VehicleType;
 public class FirstAvailableSpotAllocationStrategy implements SpotAllocationStrategy {
 
     @Override
-    public ParkingSpot allocateSpot(VehicleType vehicleType, ParkingLot parkingLot){
-        for(ParkingFloor floor: parkingLot.getParkingFloors()){
-            for(ParkingSpot spot: floor.getParkingSpots()){
-                if(!spot.getOccupied() && spot.getSpotType().name().equals(vehicleType.name())){
+    public ParkingSpot allocateSpot(VehicleType vehicleType, ParkingLot parkingLot) {
+        for (ParkingFloor floor : parkingLot.getParkingFloors()) {
+            for (ParkingSpot spot : floor.getParkingSpots()) {
+                if (spot.getSpotType().name().equals(vehicleType.name()) && spot.reserve()) {
                     return spot;
                 }
             }

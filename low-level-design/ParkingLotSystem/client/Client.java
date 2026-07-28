@@ -30,21 +30,21 @@ public class Client {
 
         //floors
         ParkingFloor floor1 = new ParkingFloor(List.of(
-                new ParkingSpot("S-101", SpotType.CAR, false, 1),
-                new ParkingSpot("S-102", SpotType.CAR, false, 1),
-                new ParkingSpot("S-111", SpotType.BIKE, false, 1),
-                new ParkingSpot("S-112", SpotType.BIKE, false, 1),
-                new ParkingSpot("S-121", SpotType.TRUCK, false, 1),
-                new ParkingSpot("S-122", SpotType.TRUCK, false, 1)
+                new ParkingSpot("S-101", SpotType.CAR, 1),
+                new ParkingSpot("S-102", SpotType.CAR, 1),
+                new ParkingSpot("S-111", SpotType.BIKE, 1),
+                new ParkingSpot("S-112", SpotType.BIKE, 1),
+                new ParkingSpot("S-121", SpotType.TRUCK, 1),
+                new ParkingSpot("S-122", SpotType.TRUCK, 1)
         ));
 
         ParkingFloor floor2 = new ParkingFloor(List.of(
-                new ParkingSpot("S-101", SpotType.CAR, false, 2),
-                new ParkingSpot("S-102", SpotType.CAR, false, 2),
-                new ParkingSpot("S-111", SpotType.BIKE, false, 2),
-                new ParkingSpot("S-112", SpotType.BIKE, false, 2),
-                new ParkingSpot("S-121", SpotType.TRUCK, false, 2),
-                new ParkingSpot("S-122", SpotType.TRUCK, false, 2)
+                new ParkingSpot("S-101", SpotType.CAR, 2),
+                new ParkingSpot("S-102", SpotType.CAR, 2),
+                new ParkingSpot("S-111", SpotType.BIKE, 2),
+                new ParkingSpot("S-112", SpotType.BIKE, 2),
+                new ParkingSpot("S-121", SpotType.TRUCK, 2),
+                new ParkingSpot("S-122", SpotType.TRUCK, 2)
         ));
 
         List<ParkingFloor> floors = List.of(floor1, floor2);
@@ -62,6 +62,8 @@ public class Client {
             System.out.println(ticket1);
         } catch (ParkingFullException ex) {
             System.out.println(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
 
         try {
@@ -69,6 +71,8 @@ public class Client {
             System.out.println("Parked V2!! Please find the ticket below");
             System.out.println(ticket2);
         } catch (ParkingFullException ex) {
+            System.out.println(ex.getMessage());
+        } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
 
@@ -78,6 +82,8 @@ public class Client {
             System.out.println(ticket3);
         } catch (ParkingFullException ex) {
             System.out.println(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
 
         try {
@@ -86,13 +92,17 @@ public class Client {
             System.out.println(ticket4);
         } catch (ParkingFullException ex) {
             System.out.println(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
 
         //unpark
         try {
-            Receipt receiptForCar1 = parkingService.unpark(ticket1);
+            Receipt receiptForCar1 = parkingService.unpark(null);
             System.out.println(receiptForCar1);
         } catch (InvalidTicketException ex) {
+            System.out.println(ex.getMessage());
+        } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
 
@@ -101,6 +111,8 @@ public class Client {
             System.out.println("Parked V5!! Please find the ticket below");
             System.out.println(ticket5);
         } catch (ParkingFullException ex) {
+            System.out.println(ex.getMessage());
+        } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
 
